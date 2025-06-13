@@ -57,8 +57,8 @@ function parseLogLine(line) {
   if (!line.trim()) return null;
   
   try {
-    // Formato esperado: printer user job-id [timestamp] page-count copies billing hostname job-name media sides
-    // Exemplo: DummyPrinter anonymous 4 [13/Jun/2025:14:08:33 +0000] total 1 - localhost Test Page - -
+    // Formato esperado: printer user job-id [timestamp] total copies billing hostname job-name media sides
+    // Exemplo: HP_LaserJet_PRO auxiliar.faturamento 6972 [06/Jun/2025:08:03:32 -0300] total 1 - 192.168.2.88 smbprn.00003396 Termo Aditivo de Reembalagem Lote_2424-640  Doc NR172.pdf - -
     
     // Extrair timestamp primeiro (está entre colchetes)
     const timestampMatch = line.match(/\[(.*?)\]/);
@@ -79,8 +79,13 @@ function parseLogLine(line) {
     }
     
     const printer = beforeParts[0];
-    const user = beforeParts[1];
+    let user = beforeParts[1];
     const jobId = beforeParts[2];
+    
+    // Traduzir smbprn para "Client Samba" para não poluir
+    if (user.startsWith('smbprn')) {
+      user = 'Client Samba';
+    }
     
     // Dividir a parte depois do timestamp
     const afterParts = afterTimestamp.trim().split(/\s+/);
@@ -132,7 +137,7 @@ function parseLogLine(line) {
     // Converter timestamp para Date
     let dateTime;
     try {
-      // Formato: 13/Jun/2025:14:08:33 +0000
+      // Formato: 06/Jun/2025:08:03:32 -0300
       // Converter para formato ISO
       const dateStr = timestampStr.replace(/(\d+)\/(\w+)\/(\d+):(\d+):(\d+):(\d+)\s+([+-]\d+)/, 
         (match, day, month, year, hour, min, sec, tz) => {
@@ -169,18 +174,6 @@ function parseLogLine(line) {
       sides,
       timestamp: Date.now()
     };
-    
-    console.log('Linha parseada com sucesso:', {
-      original: line,
-      parsed: {
-        printer: result.printer,
-        user: result.user,
-        jobId: result.jobId,
-        dateTime: result.dateTime.toISOString(),
-        numCopies: result.numCopies,
-        jobName: result.jobName
-      }
-    });
     
     return result;
   } catch (error) {
@@ -237,7 +230,6 @@ function processLogs(filePath) {
       if (!parsed) {
         if (line.trim()) {
           skippedLines++;
-          console.log(`Linha ${index + 1} ignorada:`, line);
         }
         return;
       }

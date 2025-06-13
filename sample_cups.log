@@ -1,0 +1,15 @@
+DummyPrinter anonymous 1 [13/Jun/2025:14:08:33 +0000] total 1 - localhost Test Page - -
+DummyPrinter anonymous 2 [13/Jun/2025:14:08:35 +0000] total 1 - localhost Test Page - -
+DummyPrinter anonymous 3 [13/Jun/2025:14:08:37 +0000] total 1 - localhost Test Page - -
+DummyPrinter anonymous 4 [13/Jun/2025:14:08:39 +0000] total 1 - localhost Test Page - -
+HP-LaserJet admin 5 [13/Jun/2025:09:15:32 +0000] total 2 - localhost documento1.pdf na_letter_8.5x11in one-sided
+Canon-Pixma user1 6 [13/Jun/2025:10:30:15 +0000] total 3 - localhost relatorio.docx na_letter_8.5x11in one-sided
+HP-LaserJet user2 7 [13/Jun/2025:11:45:20 +0000] total 1 - localhost apresentacao.pptx na_letter_8.5x11in one-sided
+Canon-Pixma guest 8 [13/Jun/2025:14:20:45 +0000] total 2 - localhost foto.jpg 4x6in one-sided
+HP-LaserJet admin 9 [13/Jun/2025:15:30:10 +0000] total 1 - localhost manual.pdf na_letter_8.5x11in duplex
+Canon-Pixma user1 10 [14/Jun/2025:08:30:15 +0000] total 1 - localhost planilha.xlsx na_letter_8.5x11in one-sided
+HP-LaserJet user2 11 [14/Jun/2025:09:45:20 +0000] total 2 - localhost contrato.pdf na_letter_8.5x11in duplex
+Canon-Pixma admin 12 [14/Jun/2025:11:20:45 +0000] total 1 - localhost imagem.png 4x6in one-sided
+HP-LaserJet guest 13 [14/Jun/2025:14:30:10 +0000] total 1 - localhost texto.txt na_letter_8.5x11in one-sided
+DummyPrinter anonymous 14 [14/Jun/2025:16:08:33 +0000] total 1 - localhost Test Page - -
+DummyPrinter anonymous 15 [14/Jun/2025:16:08:35 +0000] total 1 - localhost Test Page - -

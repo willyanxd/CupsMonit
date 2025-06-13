@@ -54,30 +54,112 @@ function saveCostsConfig() {
 
 // Função para parsear uma linha do log CUPS
 function parseLogLine(line) {
-  if (!line.trim() || line.includes('total')) return null;
-  
-  const parts = line.trim().split(/\s+/);
-  if (parts.length < 10) return null;
+  if (!line.trim()) return null;
   
   try {
-    const printer = parts[0];
-    const user = parts[1];
-    const jobId = parts[2];
-    const dateTimeMatch = line.match(/\[(.*?)\]/);
-    const dateTime = dateTimeMatch ? dateTimeMatch[1] : null;
-    const pageNumber = parseInt(parts[4]) || 1;
-    const numCopies = parseInt(parts[5]) || 1;
-    const jobBilling = parts[6] || '-';
-    const hostName = parts[7] || '-';
-    const jobName = parts[8] || '-';
-    const media = parts[9] || '-';
-    const sides = parts[10] || '-';
+    // Formato esperado: printer user job-id [timestamp] page-count copies billing hostname job-name media sides
+    // Exemplo: DummyPrinter anonymous 4 [13/Jun/2025:14:08:33 +0000] total 1 - localhost Test Page - -
     
-    return {
+    // Extrair timestamp primeiro (está entre colchetes)
+    const timestampMatch = line.match(/\[(.*?)\]/);
+    if (!timestampMatch) {
+      console.log('Linha sem timestamp válido:', line);
+      return null;
+    }
+    
+    const timestampStr = timestampMatch[1];
+    const beforeTimestamp = line.substring(0, line.indexOf('['));
+    const afterTimestamp = line.substring(line.indexOf(']') + 1);
+    
+    // Dividir a parte antes do timestamp
+    const beforeParts = beforeTimestamp.trim().split(/\s+/);
+    if (beforeParts.length < 3) {
+      console.log('Formato inválido antes do timestamp:', line);
+      return null;
+    }
+    
+    const printer = beforeParts[0];
+    const user = beforeParts[1];
+    const jobId = beforeParts[2];
+    
+    // Dividir a parte depois do timestamp
+    const afterParts = afterTimestamp.trim().split(/\s+/);
+    if (afterParts.length < 2) {
+      console.log('Formato inválido depois do timestamp:', line);
+      return null;
+    }
+    
+    // Determinar se é "total" ou número de página
+    let pageNumber = 1;
+    let numCopies = 1;
+    let startIndex = 0;
+    
+    if (afterParts[0] === 'total') {
+      // Formato: total numCopies ...
+      numCopies = parseInt(afterParts[1]) || 1;
+      startIndex = 2;
+    } else {
+      // Formato: pageNumber numCopies ...
+      pageNumber = parseInt(afterParts[0]) || 1;
+      numCopies = parseInt(afterParts[1]) || 1;
+      startIndex = 2;
+    }
+    
+    // Extrair campos restantes
+    const jobBilling = afterParts[startIndex] || '-';
+    const hostName = afterParts[startIndex + 1] || '-';
+    
+    // O nome do job pode conter espaços, então juntamos o resto
+    const jobNameParts = afterParts.slice(startIndex + 2);
+    let jobName = 'Unknown Job';
+    let media = '-';
+    let sides = '-';
+    
+    if (jobNameParts.length > 0) {
+      // Se há pelo menos 3 partes restantes, as últimas 2 são media e sides
+      if (jobNameParts.length >= 3) {
+        media = jobNameParts[jobNameParts.length - 2];
+        sides = jobNameParts[jobNameParts.length - 1];
+        jobName = jobNameParts.slice(0, -2).join(' ') || 'Unknown Job';
+      } else if (jobNameParts.length === 2) {
+        media = jobNameParts[jobNameParts.length - 1];
+        jobName = jobNameParts[0] || 'Unknown Job';
+      } else {
+        jobName = jobNameParts.join(' ') || 'Unknown Job';
+      }
+    }
+    
+    // Converter timestamp para Date
+    let dateTime;
+    try {
+      // Formato: 13/Jun/2025:14:08:33 +0000
+      // Converter para formato ISO
+      const dateStr = timestampStr.replace(/(\d+)\/(\w+)\/(\d+):(\d+):(\d+):(\d+)\s+([+-]\d+)/, 
+        (match, day, month, year, hour, min, sec, tz) => {
+          const months = {
+            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+          };
+          return `${year}-${months[month]}-${day.padStart(2, '0')}T${hour}:${min}:${sec}${tz.substring(0, 3)}:${tz.substring(3)}`;
+        });
+      dateTime = new Date(dateStr);
+      
+      // Se a conversão falhou, usar data atual
+      if (isNaN(dateTime.getTime())) {
+        console.log('Erro ao converter timestamp:', timestampStr);
+        dateTime = new Date();
+      }
+    } catch (error) {
+      console.log('Erro ao processar timestamp:', timestampStr, error);
+      dateTime = new Date();
+    }
+    
+    const result = {
       printer,
       user,
       jobId,
-      dateTime: dateTime ? new Date(dateTime) : new Date(),
+      dateTime,
       pageNumber,
       numCopies,
       jobBilling,
@@ -87,6 +169,20 @@ function parseLogLine(line) {
       sides,
       timestamp: Date.now()
     };
+    
+    console.log('Linha parseada com sucesso:', {
+      original: line,
+      parsed: {
+        printer: result.printer,
+        user: result.user,
+        jobId: result.jobId,
+        dateTime: result.dateTime.toISOString(),
+        numCopies: result.numCopies,
+        jobName: result.jobName
+      }
+    });
+    
+    return result;
   } catch (error) {
     console.error('Erro ao parsear linha:', line, error);
     return null;
@@ -132,10 +228,21 @@ function processLogs(filePath) {
       lastUpdate: new Date()
     };
 
-    lines.forEach(line => {
-      const parsed = parseLogLine(line);
-      if (!parsed) return;
+    console.log(`Processando ${lines.length} linhas do log...`);
+    let processedLines = 0;
+    let skippedLines = 0;
 
+    lines.forEach((line, index) => {
+      const parsed = parseLogLine(line);
+      if (!parsed) {
+        if (line.trim()) {
+          skippedLines++;
+          console.log(`Linha ${index + 1} ignorada:`, line);
+        }
+        return;
+      }
+
+      processedLines++;
       logData.totalPrints += parsed.numCopies;
       logData.jobs.push(parsed);
 
@@ -190,7 +297,13 @@ function processLogs(filePath) {
       printer.users = Array.from(printer.users);
     });
 
-    console.log(`Processados ${logData.jobs.length} jobs, ${logData.totalPrints} impressões`);
+    console.log(`Processamento concluído:`);
+    console.log(`- Linhas processadas: ${processedLines}`);
+    console.log(`- Linhas ignoradas: ${skippedLines}`);
+    console.log(`- Total de jobs: ${logData.jobs.length}`);
+    console.log(`- Total de impressões: ${logData.totalPrints}`);
+    console.log(`- Usuários únicos: ${Object.keys(logData.users).length}`);
+    console.log(`- Impressoras únicas: ${Object.keys(logData.printers).length}`);
   } catch (error) {
     console.error('Erro ao processar logs:', error);
   }

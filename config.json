@@ -1,0 +1,19 @@
+{
+  "server": {
+    "port": 3001,
+    "host": "0.0.0.0"
+  },
+  "cups": {
+    "logPath": "/var/log/cups/page_log",
+    "watchInterval": 1000
+  },
+  "database": {
+    "type": "memory"
+  },
+  "features": {
+    "realTimeUpdates": true,
+    "historyRetention": 30,
+    "csvExport": true,
+    "networkAccess": true
+  }
+}

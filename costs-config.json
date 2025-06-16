@@ -1,0 +1,14 @@
+{
+  "printers": {
+    "HP_LaserJet_PRO": {
+      "costPerPage": 0.2
+    },
+    "Xerox_AltaLink_C8030": {
+      "costPerPage": 0.2
+    },
+    "Canon_iR1643i_II_UFR_II": {
+      "costPerPage": 0.2
+    }
+  },
+  "lastUpdate": "2025-06-13T16:42:18.271Z"
+}

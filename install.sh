@@ -169,11 +169,11 @@ if [[ $EUID -eq 0 ]]; then
         echo "✅ Portas liberadas no firewall"
     fi
     
-    echo ""
-    echo "✅ Instalação do sistema concluída!"
-    echo "   Agora execute este script novamente como usuário normal para configurar a aplicação"
-    echo ""
-    exit 0
+#    echo ""
+ #   echo "✅ Instalação do sistema concluída!"
+  #  echo "   Agora execute este script novamente como usuário normal para configurar a aplicação"
+   # echo ""
+   # exit 0
 fi
 
 # Verificar se o Node.js está instalado (execução como usuário normal)

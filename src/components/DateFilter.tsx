@@ -67,16 +67,16 @@ const DateFilter: React.FC<DateFilterProps> = ({ dateRange, onDateRangeChange, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl p-6 w-full max-w-md mx-4 border border-gray-600">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Filtro de Data</h3>
+            <Calendar className="w-5 h-5 text-neon-blue" />
+            <h3 className="text-lg font-semibold text-white">Filtro de Data</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-gray-400 hover:text-neon-red transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -85,59 +85,49 @@ const DateFilter: React.FC<DateFilterProps> = ({ dateRange, onDateRangeChange, o
         <div className="space-y-4">
           {/* Quick Ranges */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Períodos Rápidos
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setQuickRange(7)}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Últimos 7 dias
-              </button>
-              <button
-                onClick={() => setQuickRange(30)}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Últimos 30 dias
-              </button>
-              <button
-                onClick={setCurrentMonth}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Este mês
-              </button>
-              <button
-                onClick={setLastMonth}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Mês passado
-              </button>
+              {[
+                { label: 'Últimos 7 dias', action: () => setQuickRange(7) },
+                { label: 'Últimos 30 dias', action: () => setQuickRange(30) },
+                { label: 'Este mês', action: setCurrentMonth },
+                { label: 'Mês passado', action: setLastMonth },
+              ].map((btn) => (
+                <button
+                  key={btn.label}
+                  onClick={btn.action}
+                  className="px-3 py-2 text-sm bg-gray-700 border border-gray-600 rounded-lg hover:bg-gray-600 hover:border-neon-cyan hover:text-neon-cyan transition-all duration-300 text-gray-300"
+                >
+                  {btn.label}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Custom Range */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Período Personalizado
             </label>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Data Inicial</label>
+                <label className="block text-xs text-gray-400 mb-1">Data Inicial</label>
                 <input
                   type="date"
                   value={localDateRange.startDate}
                   onChange={(e) => setLocalDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue focus:border-neon-blue transition-all duration-300"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Data Final</label>
+                <label className="block text-xs text-gray-400 mb-1">Data Final</label>
                 <input
                   type="date"
                   value={localDateRange.endDate}
                   onChange={(e) => setLocalDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue focus:border-neon-blue transition-all duration-300"
                 />
               </div>
             </div>
@@ -147,13 +137,13 @@ const DateFilter: React.FC<DateFilterProps> = ({ dateRange, onDateRangeChange, o
           <div className="flex space-x-3 pt-4">
             <button
               onClick={handleClear}
-              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-lg hover:bg-gray-600 hover:border-neon-red hover:text-neon-red transition-all duration-300"
             >
               Limpar
             </button>
             <button
               onClick={handleApply}
-              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-neon-blue rounded-lg hover:shadow-neon hover:shadow-blue-500/50 transition-all duration-300"
             >
               Aplicar
             </button>

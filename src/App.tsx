@@ -78,11 +78,11 @@ function App() {
   };
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'Usuários', icon: Users },
-    { id: 'printers', label: 'Impressoras', icon: Printer },
-    { id: 'jobs', label: 'Histórico', icon: FileText },
-    { id: 'costs', label: 'Custos', icon: DollarSign },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'text-neon-blue' },
+    { id: 'users', label: 'Usuários', icon: Users, color: 'text-neon-green' },
+    { id: 'printers', label: 'Impressoras', icon: Printer, color: 'text-neon-purple' },
+    { id: 'jobs', label: 'Histórico', icon: FileText, color: 'text-neon-cyan' },
+    { id: 'costs', label: 'Custos', icon: DollarSign, color: 'text-neon-yellow' },
   ];
 
   const getDateRangeText = () => {
@@ -102,18 +102,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-dark-800 to-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-gradient-to-r from-dark-800 to-dark-700 shadow-lg border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="bg-gradient-to-r from-neon-blue to-neon-green p-2 rounded-lg animate-pulse-neon">
                 <Activity className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">CUPS Log Analyzer</h1>
-                <p className="text-sm text-gray-500">Monitor de Impressão em Tempo Real</p>
+                <h1 className="text-xl font-bold text-white">CUPS Log Analyzer</h1>
+                <p className="text-sm text-neon-green">Monitor de Impressão em Tempo Real</p>
               </div>
             </div>
             
@@ -122,7 +122,7 @@ function App() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowDateFilter(!showDateFilter)}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-300 bg-dark-700 border border-gray-600 rounded-lg hover:bg-dark-600 hover:border-neon-blue hover:text-neon-blue transition-all duration-300"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>{getDateRangeText()}</span>
@@ -130,7 +130,7 @@ function App() {
                 {(dateRange.startDate || dateRange.endDate) && (
                   <button
                     onClick={clearDateFilter}
-                    className="px-2 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                    className="px-2 py-2 text-sm text-gray-400 hover:text-neon-red transition-colors"
                     title="Limpar filtro de data"
                   >
                     ✕
@@ -139,16 +139,16 @@ function App() {
               </div>
 
               {stats && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-400">
                   Última atualização: {new Date(stats.lastUpdate).toLocaleTimeString()}
                 </div>
               )}
               <button
                 onClick={fetchStats}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 text-gray-400 hover:text-neon-green transition-colors"
                 title="Atualizar dados"
               >
-                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin text-neon-blue' : ''}`} />
               </button>
             </div>
           </div>
@@ -167,7 +167,7 @@ function App() {
       {/* Error Message */}
       {error && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 neon-border text-red-400">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -175,17 +175,17 @@ function App() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
+                <h3 className="text-sm font-medium text-red-300">
                   Erro de Conexão
                 </h3>
-                <div className="mt-2 text-sm text-red-700">
+                <div className="mt-2 text-sm text-red-200">
                   <p>Não foi possível conectar ao servidor backend.</p>
                   <p className="mt-1">
                     <strong>Possíveis soluções:</strong>
                   </p>
                   <ul className="list-disc list-inside mt-1 space-y-1">
                     <li>Verifique se o backend está rodando na porta 3001</li>
-                    <li>Execute <code className="bg-red-100 px-1 rounded">./start-dev.sh</code> para iniciar os serviços</li>
+                    <li>Execute <code className="bg-red-800 px-1 rounded">./start-dev.sh</code> para iniciar os serviços</li>
                     <li>Verifique se o firewall está liberando a porta 3001</li>
                   </ul>
                 </div>
@@ -199,50 +199,58 @@ function App() {
       {stats && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-gradient-to-br from-dark-700 to-dark-800 rounded-xl shadow-lg p-6 border border-gray-600 hover:border-neon-blue transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total de Impressões</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalPrints.toLocaleString()}</p>
+                  <p className="text-sm font-medium text-gray-400">Total de Impressões</p>
+                  <p className="text-3xl font-bold text-white group-hover:text-neon-blue transition-colors">
+                    {stats.totalPrints.toLocaleString()}
+                  </p>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                <div className="bg-gradient-to-r from-blue-500 to-neon-blue p-3 rounded-lg group-hover:shadow-neon group-hover:shadow-blue-500/50 transition-all duration-300">
+                  <FileText className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-gradient-to-br from-dark-700 to-dark-800 rounded-xl shadow-lg p-6 border border-gray-600 hover:border-neon-green transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Usuários Ativos</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+                  <p className="text-sm font-medium text-gray-400">Usuários Ativos</p>
+                  <p className="text-3xl font-bold text-white group-hover:text-neon-green transition-colors">
+                    {stats.totalUsers}
+                  </p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <Users className="w-6 h-6 text-green-600" />
+                <div className="bg-gradient-to-r from-green-500 to-neon-green p-3 rounded-lg group-hover:shadow-neon group-hover:shadow-green-500/50 transition-all duration-300">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-gradient-to-br from-dark-700 to-dark-800 rounded-xl shadow-lg p-6 border border-gray-600 hover:border-neon-purple transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Impressoras</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalPrinters}</p>
+                  <p className="text-sm font-medium text-gray-400">Impressoras</p>
+                  <p className="text-3xl font-bold text-white group-hover:text-neon-purple transition-colors">
+                    {stats.totalPrinters}
+                  </p>
                 </div>
-                <div className="bg-purple-100 p-3 rounded-lg">
-                  <Printer className="w-6 h-6 text-purple-600" />
+                <div className="bg-gradient-to-r from-purple-500 to-neon-purple p-3 rounded-lg group-hover:shadow-neon group-hover:shadow-purple-500/50 transition-all duration-300">
+                  <Printer className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-gradient-to-br from-dark-700 to-dark-800 rounded-xl shadow-lg p-6 border border-gray-600 hover:border-neon-yellow transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Jobs Processados</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalJobs}</p>
+                  <p className="text-sm font-medium text-gray-400">Jobs Processados</p>
+                  <p className="text-3xl font-bold text-white group-hover:text-neon-yellow transition-colors">
+                    {stats.totalJobs}
+                  </p>
                 </div>
-                <div className="bg-orange-100 p-3 rounded-lg">
-                  <BarChart3 className="w-6 h-6 text-orange-600" />
+                <div className="bg-gradient-to-r from-orange-500 to-neon-yellow p-3 rounded-lg group-hover:shadow-neon group-hover:shadow-orange-500/50 transition-all duration-300">
+                  <BarChart3 className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
@@ -254,8 +262,8 @@ function App() {
       {loading && !stats && !error && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Carregando dados...</p>
+            <RefreshCw className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-4" />
+            <p className="text-gray-400">Carregando dados...</p>
           </div>
         </div>
       )}
@@ -263,18 +271,18 @@ function App() {
       {/* Navigation Tabs */}
       {(stats || error) && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="border-b border-gray-200 bg-white rounded-t-xl">
-            <nav className="-mb-px flex space-x-8 px-6">
+          <div className="border-b border-gray-700 bg-gradient-to-r from-dark-800 to-dark-700 rounded-t-xl">
+            <nav className="-mb-px flex space-x-8 px-6 overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 whitespace-nowrap ${
                       activeTab === tab.id
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? `border-current ${tab.color} shadow-neon-sm`
+                        : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -290,7 +298,7 @@ function App() {
       {/* Content */}
       {stats && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-          <div className="bg-white rounded-b-xl shadow-sm border border-gray-200 border-t-0">
+          <div className="bg-gradient-to-br from-dark-800 to-dark-700 rounded-b-xl shadow-lg border border-gray-700 border-t-0">
             {activeTab === 'dashboard' && <Dashboard dateRange={dateRange} />}
             {activeTab === 'users' && <UserStats dateRange={dateRange} />}
             {activeTab === 'printers' && <PrinterStats dateRange={dateRange} />}

@@ -70,7 +70,7 @@ const UserStats: React.FC<UserStatsProps> = ({ dateRange }) => {
   if (loading) {
     return (
       <div className="p-6 flex justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-green"></div>
       </div>
     );
   }
@@ -79,12 +79,12 @@ const UserStats: React.FC<UserStatsProps> = ({ dateRange }) => {
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Estatísticas por Usuário</h2>
-          <p className="text-gray-600">Visualize o uso de impressão por usuário do sistema</p>
+          <h2 className="text-2xl font-bold text-white">Estatísticas por Usuário</h2>
+          <p className="text-gray-400">Visualize o uso de impressão por usuário do sistema</p>
         </div>
         <button
           onClick={downloadUsers}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-600 to-neon-green text-white rounded-lg hover:shadow-neon hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-105"
         >
           <Download className="w-4 h-4" />
           <span>Exportar Usuários</span>
@@ -92,80 +92,106 @@ const UserStats: React.FC<UserStatsProps> = ({ dateRange }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user) => (
-          <div key={user.name} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <User className="w-5 h-5 text-blue-600" />
+        {users.map((user) => {
+          const maxPrints = Math.max(...users.map(u => u.totalPrints));
+          const utilizationPercentage = maxPrints > 0 ? (user.totalPrints / maxPrints) * 100 : 0;
+          const totalPrints = users.reduce((sum, u) => sum + u.totalPrints, 0);
+          const userPercentage = totalPrints > 0 ? (user.totalPrints / totalPrints) * 100 : 0;
+
+          return (
+            <div 
+              key={user.name} 
+              className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-600 rounded-xl p-6 hover:shadow-lg hover:border-neon-green transition-all duration-300 transform hover:scale-105"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="bg-gradient-to-r from-green-600 to-neon-green p-2 rounded-lg shadow-neon shadow-green-500/50">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">{user.name}</h3>
+                  <p className="text-sm text-gray-400">Usuário do sistema</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{user.name}</h3>
-                <p className="text-sm text-gray-500">Usuário do sistema</p>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Total de Impressões</span>
+                  </div>
+                  <span className="font-bold text-lg text-neon-blue">{user.totalPrints}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Jobs Enviados</span>
+                  </div>
+                  <span className="font-semibold text-neon-cyan">{user.jobs}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <Printer className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Impressoras Utilizadas</span>
+                  </div>
+                  <span className="font-semibold text-neon-purple">{user.printers.length}</span>
+                </div>
+
+                <div className="pt-2 border-t border-gray-700">
+                  <p className="text-xs text-gray-500 mb-2">Impressoras:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {user.printers.map((printer) => (
+                      <span
+                        key={printer}
+                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-700/50 text-gray-300 border border-gray-600"
+                      >
+                        {printer}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Utilização relativa</span>
+                    <span>{utilizationPercentage.toFixed(1)}%</span>
+                  </div>
+                  <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-neon-green h-3 rounded-full transition-all duration-1000 shadow-neon shadow-green-500/50"
+                      style={{ width: `${Math.min(100, utilizationPercentage)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-gray-700">
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <span className="text-gray-500">% do total:</span>
+                      <div className="text-neon-green font-semibold">
+                        {userPercentage.toFixed(1)}%
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Média por job:</span>
+                      <div className="text-neon-blue font-semibold">
+                        {(user.totalPrints / user.jobs).toFixed(1)} páginas
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">Total de Impressões</span>
-                </div>
-                <span className="font-bold text-lg text-gray-900">{user.totalPrints}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">Jobs Enviados</span>
-                </div>
-                <span className="font-semibold text-gray-700">{user.jobs}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <Printer className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">Impressoras Utilizadas</span>
-                </div>
-                <span className="font-semibold text-gray-700">{user.printers.length}</span>
-              </div>
-
-              <div className="pt-2 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-2">Impressoras:</p>
-                <div className="flex flex-wrap gap-1">
-                  {user.printers.map((printer) => (
-                    <span
-                      key={printer}
-                      className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
-                    >
-                      {printer}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <div className="bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: `${Math.min(100, (user.totalPrints / Math.max(...users.map(u => u.totalPrints))) * 100)}%` 
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {((user.totalPrints / users.reduce((sum, u) => sum + u.totalPrints, 0)) * 100).toFixed(1)}% do total
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {users.length === 0 && (
         <div className="text-center py-12">
-          <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum usuário encontrado</h3>
-          <p className="text-gray-500">Não há dados de usuários para exibir no momento.</p>
+          <User className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-white mb-2">Nenhum usuário encontrado</h3>
+          <p className="text-gray-400">Não há dados de usuários para exibir no momento.</p>
         </div>
       )}
     </div>
